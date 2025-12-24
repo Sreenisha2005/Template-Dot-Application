@@ -16,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -45,7 +46,7 @@ public class templatesMethods {
             );
 
             PDRectangle mediabox = page.getMediaBox();
-            float fontSize = 18;
+            int fontSize = 18;
             float pageWidth = mediabox.getWidth();
             float pageHeight = mediabox.getHeight();
             float leading = fontSize*1.5f;
@@ -81,39 +82,26 @@ public class templatesMethods {
             //name-end
 
             //para-start
-            contentStream.beginText();
-            contentStream.setFont(font, fontSize);
-            startY = pageHeight/2 - 30;
-            contentStream.newLineAtOffset(0, startY);
-
-            StringBuilder builder = new StringBuilder();
             String certificateContent = map.get("paragraph");
-            for (String text : certificateContent.split(" ")){
 
-                String textLine = builder + text + " ";
-                float len = font.getStringWidth(textLine) / 1000 * fontSize;
+            List<String> lines =
+                    helpers.wrapText(certificateContent, font, fontSize, maxWidth);
 
-                if (len > maxWidth){
-                    float centeredX = (pageWidth -
-                            (font.getStringWidth(builder.toString()) / 1000 * fontSize)) / 2;
-                    contentStream.newLineAtOffset(centeredX, 0);
-                    contentStream.showText(builder.toString().trim());
-                    contentStream.newLineAtOffset(-centeredX, -leading);
-                    builder = new StringBuilder(text).append(" ");
-                }
-                else {
-                    builder.append(text).append(" ");
-                }
+            startY = pageHeight / 2 - 30;
+
+            contentStream.setFont(font, fontSize);
+
+            for (String line : lines) {
+                float lineWidth = helpers.getTextWidth(fontSize, font, line);
+                float lineX = (pageWidth - lineWidth) / 2;
+
+                contentStream.beginText();
+                contentStream.newLineAtOffset(lineX, startY);
+                contentStream.showText(line);
+                contentStream.endText();
+
+                startY -= leading;
             }
-            if (!builder.isEmpty()){
-                float centeredX = (pageWidth - (
-                        font.getStringWidth(builder.toString()) / 1000 * fontSize
-                )) / 2;
-
-                contentStream.newLineAtOffset(centeredX, 0);
-                contentStream.showText(builder.toString().trim());
-            }
-            contentStream.endText();
             //para-end
 
             contentStream.close();
@@ -128,6 +116,10 @@ public class templatesMethods {
         }
 
     }
+
+//    public byte[] offerLetter(CertificateDTO certificateDTO){
+//
+//    }
 
 
 

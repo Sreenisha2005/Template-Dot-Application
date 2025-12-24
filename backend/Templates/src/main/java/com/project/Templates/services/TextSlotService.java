@@ -26,16 +26,6 @@ public class TextSlotService {
                 .key(dto.getKey())
                 .template(template);
 
-        if (dto.getMarginTop() != null) builder.marginTop(dto.getMarginTop());
-        if (dto.getMarginBottom() != null) builder.marginBottom(dto.getMarginBottom());
-        if (dto.getMarginLeft() != null) builder.marginLeft(dto.getMarginLeft());
-        if (dto.getMarginRight() != null) builder.marginRight(dto.getMarginRight());
-        if (dto.getFontSize() != null) builder.fontSize(dto.getFontSize());
-        if (dto.getFont() != null) builder.font(dto.getFont());
-        if (dto.getAlignment() != null) builder.alignment(dto.getAlignment());
-        if (dto.getMaxWidth() != null) builder.maxWidth(dto.getMaxWidth());
-        if (dto.getRequired() != null) builder.required(dto.getRequired());
-
         TextSlot slot = builder.build();
         return slotsRepo.save(slot);
     }
@@ -47,15 +37,6 @@ public class TextSlotService {
         if (slot != null){
             dto.setKey(slot.getKey());
             dto.setTemplateId(slot.getTemplate().getId());
-            if (slot.getMarginTop() != null) dto.setMarginTop(slot.getMarginTop());
-            if (slot.getMarginBottom() != null) dto.setMarginBottom(slot.getMarginBottom());
-            if (slot.getMarginLeft() != null) dto.setMarginLeft(slot.getMarginLeft());
-            if (slot.getMarginRight() != null) dto.setMarginRight(slot.getMarginRight());
-            if (slot.getFontSize() != null) dto.setFontSize(slot.getFontSize());
-            if (slot.getFont() != null) dto.setFont(slot.getFont());
-            if (slot.getAlignment() != null) dto.setAlignment(slot.getAlignment());
-            if (slot.getMaxWidth() != null) dto.setMaxWidth(slot.getMaxWidth());
-            if (slot.getRequired() != null) dto.setRequired(slot.getRequired());
         }
 
         return dto;

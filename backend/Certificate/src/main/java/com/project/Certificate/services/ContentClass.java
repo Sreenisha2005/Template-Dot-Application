@@ -17,7 +17,7 @@ public class ContentClass {
 
         Map<String, String> map = new HashMap<>();
         map.put("firstLine", "This is to certify that");
-        map.put("candidateName", certificateDTO.getName());
+        map.put("CandidateName", certificateDTO.getName());
         map.put("paragraph", paragraph);
 
         return map;

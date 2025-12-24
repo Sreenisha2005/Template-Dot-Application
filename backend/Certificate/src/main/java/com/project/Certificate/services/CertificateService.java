@@ -44,8 +44,8 @@ public class CertificateService {
         for (TextSlotDTO slot : slotList) {
             if (!slotContent.containsKey(slot.getKey())) continue;
 
-            int fontsize = slot.getFontSize();
-            int maxWidth = slot.getMaxWidth();
+            int fontsize = 14;
+            int maxWidth = 800;
             float leading = fontsize + 2;
             String value = slotContent.get(slot.getKey());
             contentStream.setFont(font, fontsize);
@@ -60,20 +60,8 @@ public class CertificateService {
 
             float textHeight = lines.size() * leading;
 
-            // Resolve coordinates with alignment + margins
-            Point2D.Float start = helpers.resolve(
-                    slot.getAlignment(),
-                    page,
-                    longestWidth,
-                    textHeight,
-                    slot.getMarginTop() ,
-                    slot.getMarginBottom(),
-                    slot.getMarginLeft(),
-                    slot.getMarginRight()
-            );
 
             contentStream.beginText();
-            contentStream.newLineAtOffset(start.x, start.y);
 
             for (String line : lines) {
                 contentStream.showText(line);
