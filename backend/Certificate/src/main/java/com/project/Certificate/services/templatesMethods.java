@@ -1,5 +1,6 @@
 package com.project.Certificate.services;
 
+import com.project.Certificate.feign.TemplatesInterface;
 import com.project.Certificate.models.CertificateDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.Loader;
@@ -8,11 +9,13 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.*;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 @Service
@@ -21,28 +24,27 @@ public class templatesMethods {
 
     private final HelperMethods helpers;
     private final ContentClass content;
+    private final TemplatesInterface templatesInterface;
 
     public byte[] completionCertificate(CertificateDTO certificateDTO){
 
         Map<String, String> map = content.getContentForCompletionCertificate(certificateDTO);
 
         String firstLine = map.get("firstLine");
-        File file = new File
-                ("D:/java/Certificate/src/main/resources/templates/Completion_Certificate.pdf");
 
         try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PDDocument pdDocument = Loader.loadPDF(file);
-            PDPage pdPage = pdDocument.getPage(0);
+            Resource templatePdf = templatesInterface.getTemplate(1L).getBody();
+            InputStream is = templatePdf.getInputStream();
+            PDDocument document = Loader.loadPDF(is.readAllBytes());
+            PDPage page = document.getPage(0);
+
             PDPageContentStream contentStream = new PDPageContentStream(
-                    pdDocument,
-                    pdPage,
+                    document, page,
                     PDPageContentStream.AppendMode.APPEND,
-                    true,
-                    true
+                    true, true
             );
 
-            PDRectangle mediabox = pdPage.getMediaBox();
+            PDRectangle mediabox = page.getMediaBox();
             float fontSize = 18;
             float pageWidth = mediabox.getWidth();
             float pageHeight = mediabox.getHeight();
@@ -50,7 +52,7 @@ public class templatesMethods {
             float maxWidth = 700;
             float startX;
             float startY;
-            PDFont font = helpers.font(pdDocument);
+            PDFont font = helpers.font(document);
 
             //text-start
             contentStream.beginText();
@@ -116,7 +118,8 @@ public class templatesMethods {
 
             contentStream.close();
 
-            pdDocument.save(outputStream);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            document.save(outputStream);
             return outputStream.toByteArray();
         }
 
