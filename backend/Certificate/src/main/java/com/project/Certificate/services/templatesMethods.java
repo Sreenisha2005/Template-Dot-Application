@@ -9,6 +9,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.*;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
@@ -116,10 +117,6 @@ public class templatesMethods {
         }
 
     }
-
-//    public byte[] offerLetter(CertificateDTO certificateDTO){
-//
-//    }
 
 
 
