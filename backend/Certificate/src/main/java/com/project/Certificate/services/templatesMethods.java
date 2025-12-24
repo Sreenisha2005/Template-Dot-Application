@@ -1,40 +1,32 @@
 package com.project.Certificate.services;
 
-import com.project.Certificate.models.RequestDTO;
+import com.project.Certificate.models.CertificateDTO;
+import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.*;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.Map;
 
 @Service
-public class PDFService {
+@RequiredArgsConstructor
+public class templatesMethods {
 
-    protected PDFont font(PDDocument pdDocument){
-        PDFont font;
-        final ClassPathResource resource =
-                new ClassPathResource("fonts/Montserrat-SemiBold_72e0d276db1e5baa6f2b4caddfef5b93.ttf");
-        try {
-            InputStream fontstream = resource.getInputStream();
-            font = PDType0Font.load(pdDocument, fontstream, true);
+    private final HelperMethods helpers;
+    private final ContentClass content;
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public byte[] completionCertificate(CertificateDTO certificateDTO){
 
-        return font;
-    }
+        Map<String, String> map = content.getContentForCompletionCertificate(certificateDTO);
 
-    public byte[] modifyPdf(RequestDTO requestDTO){
-        String firstLine = "This is to certify that";
+        String firstLine = map.get("firstLine");
         File file = new File
                 ("D:/java/Certificate/src/main/resources/templates/Completion_Certificate.pdf");
 
@@ -58,7 +50,7 @@ public class PDFService {
             float maxWidth = 700;
             float startX;
             float startY;
-            PDFont font = font(pdDocument);
+            PDFont font = helpers.font(pdDocument);
 
             //text-start
             contentStream.beginText();
@@ -74,7 +66,7 @@ public class PDFService {
 
             //name-start
             textWidth =
-                    font.getStringWidth(requestDTO.getName()) / 1000 * (fontSize * 2);
+                    font.getStringWidth(certificateDTO.getName()) / 1000 * (fontSize * 2);
 
             startX = (pageWidth - textWidth) / 2;
             startY = pageHeight/2 + 20;
@@ -82,7 +74,7 @@ public class PDFService {
             contentStream.beginText();
             contentStream.setFont(font, fontSize * 2);
             contentStream.newLineAtOffset(startX, startY);
-            contentStream.showText(requestDTO.getName());
+            contentStream.showText(certificateDTO.getName());
             contentStream.endText();
             //name-end
 
@@ -93,7 +85,8 @@ public class PDFService {
             contentStream.newLineAtOffset(0, startY);
 
             StringBuilder builder = new StringBuilder();
-            for (String text : getContent(requestDTO).split(" ")){
+            String certificateContent = map.get("paragraph");
+            for (String text : certificateContent.split(" ")){
 
                 String textLine = builder + text + " ";
                 float len = font.getStringWidth(textLine) / 1000 * fontSize;
@@ -133,58 +126,8 @@ public class PDFService {
 
     }
 
-// not in use
-    public void createPdf(RequestDTO requestDTO){
-        float fontSize = 20;
-        PDFont font;
-        PDDocument pdDocument;
-        try{
-            pdDocument = new PDDocument();
-            PDPage pdPage = new PDPage();
-            pdDocument.addPage(pdPage);
 
 
-            try (PDPageContentStream contentStream =
-                         new PDPageContentStream(pdDocument, pdPage)){
-                contentStream.beginText();
-                contentStream.setFont(font(pdDocument), fontSize);
-                contentStream.setLeading(fontSize);
-                contentStream.newLineAtOffset(100, 250);
 
-                StringBuilder builder = new StringBuilder();
-                for (String text : getContent(requestDTO).split(" ")){
-                    String textLine = builder + text + " ";
-                    float len = font(pdDocument).getStringWidth(textLine) / 1000 * fontSize;
-
-                    if (len > 200){
-                        contentStream.showText(builder.toString().trim());
-                        contentStream.newLineAtOffset(0, -fontSize-2f);
-                        builder = new StringBuilder(text).append(" ");
-                    }
-                    else {
-                        builder.append(text).append(" ");
-                    }
-                }
-                if (!builder.isEmpty()){
-                    contentStream.showText(builder.toString().trim());
-                }
-                contentStream.endText();
-            }
-            pdDocument.save("pdDocument.pdf");
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-
-    }
-
-    public String getContent(RequestDTO requestDTO){
-        return "has successfully completed his role as " +
-                requestDTO.getRole() + " at NeuroStack from "+
-                requestDTO.getStartDate() + " to " + requestDTO.getEndDate() +
-                ", during which he demonstrated strong technical skills and consistently delivered quality work. " +
-                "His performance met our expectations and we wish him continued success in his future endeavors.";
-    }
 
 }

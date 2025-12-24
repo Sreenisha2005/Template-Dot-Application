@@ -10,7 +10,6 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.geom.Point2D;
 import java.io.ByteArrayOutputStream;
@@ -23,7 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CertificateService {
     private final TemplatesInterface templatesInterface;
-    private final PDFService pdfService;
+    private final templatesMethods templatesMethods;
     private final HelperMethods helpers;
 
     public byte[] generateCertificate(Long templateId, Map<String, String> slotContent) throws IOException {
@@ -40,7 +39,7 @@ public class CertificateService {
                 true, true
         );
 
-        PDFont font = pdfService.font(document);
+        PDFont font = helpers.font(document);
 
         for (TextSlotDTO slot : slotList) {
             if (!slotContent.containsKey(slot.getKey())) continue;

@@ -1,12 +1,16 @@
 package com.project.Certificate.services;
 
 import com.project.Certificate.models.TextSlotDTO;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +18,23 @@ import static com.project.Certificate.models.TextSlotDTO.TextAlignment.*;
 
 @Component
 public class HelperMethods {
+    protected PDFont font(PDDocument pdDocument){
+        PDFont font;
+        final ClassPathResource resource =
+                new ClassPathResource("fonts/Montserrat-SemiBold_72e0d276db1e5baa6f2b4caddfef5b93.ttf");
+        try {
+            InputStream fontstream = resource.getInputStream();
+            font = PDType0Font.load(pdDocument, fontstream, true);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return font;
+    }
+
+
+
     public Point2D.Float resolve(
             TextSlotDTO.TextAlignment alignment,
             PDPage page,

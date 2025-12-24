@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestDTO {
+public class CertificateDTO {
     private String name;
     private String role;
 
