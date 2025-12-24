@@ -1,6 +1,5 @@
 package com.project.Certificate.services;
 
-import com.project.Certificate.models.TextSlotDTO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDFont;
